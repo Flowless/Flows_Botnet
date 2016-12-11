@@ -58,7 +58,7 @@ public class Controller {
     Random rand = new Random();
     int choice = rand.nextInt(4);
     //The chosen command will be sent to away
-    String[] commands = {"VERSION", "PASSWD", "GETUID", "DOWNLOAD"};
+    String[] commands = {"VERSION", "PASSWD", "GETUID", "PICTURE"};
     // Determine command to be sent
     System.out.println("Sending: " + commands[choice]);
     //Initialize PrintWriter to start output stream
