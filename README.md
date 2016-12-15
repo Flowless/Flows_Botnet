@@ -1,7 +1,7 @@
-# Flows_Botnet - Network Security & Cryptography
+# Flowless' Botnet - Network Security & Cryptography
 
-COMMANDS:
-  VERSION: Get OS version [lsb_release -a] ....
-  PASSWD: Returns a password hash ....
-  GETUID: Get username [whoami] .... 
-  PICTURE: Returns Base64-encoded picture .... 
+COMMANDS: <br />
+  VERSION: Get OS version [lsb_release -a] <br />
+  PASSWD: Returns a password hash <br />
+  GETUID: Get username [whoami] <br />
+  PICTURE: Returns Base64-encoded picture <br />
